@@ -185,7 +185,11 @@ Checking if there are any null values and if so, which.
 
 df.isnull().sum()
 
-"""Converting the string values to numeric valuesto use them in the training of the models."""
+"""Converting the string values to numeric valuesto use them in the training of the models.
+
+One-Hot Encoding: 
+This process takes categorical variables and converts them to a numerical representation without an arbitrary ordering. What computers know is numbers and for machine learning it is vital to accommodate the feautures into numeric values.
+"""
 
 numeric_gender = {'Female': 1, 'Male': 2}
 df ['Gender'] = df['Gender'].map(numeric_gender)
@@ -276,9 +280,9 @@ from pandas import DataFrame
 # %matplotlib inline
 plt.figure(figsize=(12, 8))
 df_temp = df.copy()
-Index= df.columns
-Cols = df.columns
-df_temp = DataFrame(abs(np.random.randn(13, 13)), index=Index, columns=Cols)
+Index= ['Gender',	'Married',	'Dependents',	'Education',	'Self_Employed',	'ApplicantIncome',	'CoapplicantIncome',	'LoanAmount',	'Loan_Amount_Term',	'Credit_History',	'Property_Area',	'Loan_Status']
+Cols = ['Gender',	'Married',	'Dependents',	'Education',	'Self_Employed',	'ApplicantIncome',	'CoapplicantIncome',	'LoanAmount',	'Loan_Amount_Term',	'Credit_History',	'Property_Area',	'Loan_Status']
+df_temp = DataFrame(abs(np.random.randn(12, 12)), index=Index, columns=Cols)
 
 sns.heatmap(df_temp.corr(), annot=True, cmap = 'magma')
 plt.show()
