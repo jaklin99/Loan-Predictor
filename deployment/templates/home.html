@@ -11,92 +11,61 @@
 {%block content%}
 <form  action="/result" method="POST">
 <div class="column">
-<b>Term:</b> <select name="Term" style="margin-top:30px" required>
-  <option value="Short Term">Short Term</option>
-  <option value="Long Term">Long Term</option>
-</select>
 <p>&nbsp</p>
-  <b>Credit Score:</b>
-  <input type="text" name="Credit Score" required>
+    <b>Gender:</b> <select name="Gender" style="margin-top:30px" required>
+  <option value="Short Term">Woman</option>
+  <option value="Long Term">Man</option>
+</select>
+      <p>&nbsp</p>
+    <b>Married:</b> <select name="Married" style="margin-top:30px" required>
+  <option value="Short Term">Yes</option>
+  <option value="Long Term">No</option>
+</select>
   <p>&nbsp</p>
-  <b>Annual Income:</b>
-  <input type="text" name="Annual Income" required>
+    <b>Education:</b> <select name="Education" style="margin-top:30px" required>
+  <option value="Short Term">Graduated</option>
+  <option value="Long Term">Not graduated</option>
+</select>
   <p>&nbsp</p>
- <b>Years in Current Job:</b><select name="Years in current job"  style="margin-top:30px" required>
-   <option value="10+ years">10+ years</option>
-   <option value="2 years">2 years</option>
-   <option value="3 years">3 years</option>
-   <option value="<1 year"><1 year</option>
-   <option value="5 years">5 years</option>
-   <option value="1 year">1 year</option>
-   <option value="4 years">4 years</option>
-   <option value="6 years">6 years</option>
-   <option value="7 years">7 years</option>
-   <option value="8 years">8 years</option>
-   <option value="9 years">9 years</option>
-  </select>
+<b>Self_Eployed:</b> <select name="Self_Eployed" style="margin-top:30px" required>
+  <option value="Short Term">Yes</option>
+  <option value="Long Term">No</option>
+</select>
   <p>&nbsp</p>
-<b>Home Ownership:</b>
-  <select name="Home Ownership"  style="margin-top:30px"required>
-<option value="Home Mortgage">Home Mortgage</option>
-<option value="Rent">Rent</option>
-<option value="Own Home">Own Home</option>
-<option value="Have Mortgage">Have Mortgage</option>
-</select>
+    <b>Applicant income</b>
+<input type="text" name="ApplicantIncome" style="margin-top:20px"required>
+<p>&nbsp</p>
+      <b>Coapplicant income</b>
+<input type="text" name="CoapplicantIncome" style="margin-top:20px"required>
+<p>&nbsp</p>
+  <b>Loan amount term</b>
+<input type="text" name="LoanAmountTerm" style="margin-top:20px"required>
 
 <p>&nbsp</p>
-<b>Purpose:</b>
-<select name="Purpose"  style="margin-top:30px"required>
-<option value="Debt Consolidation">Debt Consolidation</option>
-<option value="other">other</option>
-<option value="Home Improvements">Home Improvements</option>
-<option value="Business Loan ">Business Loan</option>
-<option value="Buy a Car">Buy a Car</option>
-<option value="Medical Bills">Medical Bills</option>
-<option value="Buy House">Buy House</option>
-<option value="Take a Trip">Take a Trip</option>
-<option value="major_purchase">major_purchase</option>
-<option value="small_business">small_business</option>
-<option value="moving">moving</option>
-<option value="wedding">wedding</option>
-<option value="vacation">vacation</option>
-<option value="Educational Expenses">Educational Expenses</option>
-<option value="renewable_energy">renewable_energy</option>
-</select>
+<b>Credit history:</b>
+<input type="text" name="Credit History" style="margin-top:20px"required>
 
 <p>&nbsp</p>
-<b>Monthly Debt:</b>
-<input type="text" name="Monthly Debt" style="margin-top:20px"required>
+<b>Propery area:</b>
+<input type="text" name="Propery_Area" style="margin-top:20px"required>
 
 <p>&nbsp</p>
-<b>Years of Credit History:</b>
-<input type="text" name="Years of Credit History" style="margin-top:20px"required>
+<b>Loan amount log:</b>
+<input type="text" name="LoanAmount_log" style="margin-top:20px"required>
 
 <p>&nbsp</p>
-<b>Number of Open Accounts:</b>
-<input type="text" name="Number of Open Accounts" style="margin-top:20px"required>
-
+<b>Total income :</b>
+<input type="text" name="TotalIncome" style="margin-top:20px"required>
 <p>&nbsp</p>
-<b>Number of Credit Problems:</b>
-<input type="text" name="Number of Credit Problems" style="margin-top:20px"required>
-
+    <p>&nbsp</p>
+<b>Total income log:</b>
+<input type="text" name="TotalIncomeLog" style="margin-top:20px"required>
 <p>&nbsp</p>
-<b>Maximum Open Credits:</b>
-<input type="text" name="Maximum Open Credits" style="margin-top:20px"required>
 <p>&nbsp</p>
-<b>Tax Liens:</b>
-<select name="Tax Liens" method="GET" style="margin-top:20px"required>
-<option value="0">0</option>
-<option value="1">1</option>
-</select>
-<p>&nbsp</p>
-<b>Current Credit Balance:</b>
-<input type="text" name="Current Credit Balance" style="margin-top:20px"required>
-</div>
+    </div>
 <button type="submit" class="btn btn-primary" id="predict">Predict</button>
 </form>
 {%endblock%}
-
   </body>
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>

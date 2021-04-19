@@ -16,65 +16,67 @@ def home():
 @app.route('/result',methods=['POST'])
 def predict():
     # Getting the data from the form
-    term=request.form['Term']
-    credit_score=request.form['Credit Score']
-    annual_income=request.form['Annual Income']
-    years_current_job=request.form['Years in current job']
-    home_ownership=request.form['Home Ownership']
-    purpose=request.form['Purpose']
-    monthly_debt=request.form['Monthly Debt']
-    years_credit_hist=request.form['Years of Credit History']
-    number_of_open_accounts=request.form['Number of Open Accounts']
-    number_credit_prob=request.form['Number of Credit Problems']
-    max_open_credit=request.form['Maximum Open Credits']
-    tax_liens=request.form['Tax Liens']
-    current_credit_balance=request.form['Current Credit Balance']
+    #loan_id =request.form['Loan_ID']
+    gender=request.form['Gender']
+    married=request.form['Married']
+    education=request.form['Education']
+    self_eployed=request.form['Self_Employed']
+    applicantIncome=request.form['ApllicantIncome']
+    coapplicantIncome=request.form['CoapplicantIncome']
+    loanAmountTerm=request.form['Loan_Amount_Term']
+    credit_history=request.form['Credit_History']
+    property_area=request.form['Propery_Area']
+    loanAmount=request.form['Loan_Status']
+    loanAmount_log=request.form['LoanAmount_log']
+    totalIncome=request.form['TotalIncome']
+    totalIncome_log=request.form['TotalIncome_log']
     #  creating a json object to hold the data from the form
     input_data=[{
-    'term':term,
-    'credit_score':credit_score,
-    'annual_income':annual_income,
-    'years_current_job':years_current_job,
-    'home_ownership':home_ownership,
-    'purpose':purpose,
-    'monthly_debt':monthly_debt,
-    'years_credit_hist':years_credit_hist,
-    'number_of_open_accounts':number_of_open_accounts,
-    'number_credit_prob':number_credit_prob,
-    'current_credit_balance':current_credit_balance,
-    'max_open_credit':max_open_credit,
-    'tax_liens':tax_liens}]
-
+    #'Loan_ID':loan_id,
+    'Gender':gender,
+    'Married' :married,
+    'Education':education,
+    'Self_Employed':self_eployed,
+    'ApllicantIncome':applicantIncome,
+    'CoapplicantIncome':coapplicantIncome,
+    'Loan_Amount_Term':loanAmountTerm,
+    'Credit_History':credit_history,
+    'Propery_Area':property_area,
+    'Loan_Status':loanAmount,
+    'LoanAmount_log':loanAmount_log,
+    'TotalIncome':totalIncome,
+    'TotalIncome_log':totalIncome_log}]
 
     dataset=pd.DataFrame(input_data)
 
     dataset=dataset.rename(columns={
-                'term':'Term',
-                'credit_score': 'Credit Score',
-                'annual_income':'Annual Income',
-                'years_current_job':'Years in current job',
-                'home_ownership':'Home Ownership',
-                'purpose':'Purpose',
-                'monthly_debt':'Monthly Debt',
-                'years_credit_hist':'Years of Credit History',
-                'number_of_open_accounts':'Number of Open Accounts',
-                'number_credit_prob':'Number of Credit Problems',
-                'current_credit_balance':'Current Credit Balance',
-                'max_open_credit':'Maximum Open Credit',
-                'tax_liens':'Tax Liens'})
+        #'Loan_ID': 'loan_id',
+        'Gender': 'gender',
+        'Married': 'married',
+        'Education': 'education',
+        'Self_Employed': 'self_eployed',
+        'ApllicantIncome': 'applicantIncome',
+        'CoapplicantIncome': 'coapplicantIncome',
+        'Loan_Amount_Term': 'loanAmountTerm',
+        'Credit_History': 'credit_history',
+        'Propery_Area': 'property_area',
+        'Loan_Status': 'loanAmount',
+        'LoanAmount_log': 'loanAmount_log',
+        'TotalIncome': 'totalIncome',
+        'TotalIncome_log': 'totalIncome_log'})
+    #'Loan_ID', 'Gender', 'Married', 'Education', 'Self_Employed', 'ApllicantIncome', 'CoapplicantIncome', 'Loan_Amount_Term', 'Credit_History', 'Propery_Area', 'Loan_Status', 'LoanAmount_log', 'TotalIncome', 'TotalIncome_log'
 
-    dataset[['Credit Score','Annual Income','Monthly Debt','Years of Credit History',
-             'Number of Open Accounts', 'Number of Credit Problems', 'Current Credit Balance', 'Maximum Open Credit', 'Tax Liens']] = dataset[['Credit Score', 'Annual Income', 'Monthly Debt', 'Years of Credit History', 'Number of Open Accounts', 'Number of Credit Problems', 'Current Credit Balance', 'Maximum Open Credit', 'Tax Liens']].astype(float)
+    dataset[['Gender', 'Married', 'Education', 'Self_Employed', 'ApllicantIncome', 'CoapplicantIncome', 'Loan_Amount_Term', 'Credit_History',
+             'Propery_Area', 'Loan_Status', 'LoanAmount_log', 'TotalIncome', 'TotalIncome_log']] = dataset[['Gender', 'Married', 'Education', 'Self_Employed', 'ApllicantIncome', 'CoapplicantIncome', 'Loan_Amount_Term', 'Credit_History', 'Propery_Area', 'Loan_Status', 'LoanAmount_log', 'TotalIncome', 'TotalIncome_log']].astype(float)
 
-    dataset[['Term','Years in current job','Home Ownership','Purpose']]=dataset[['Term','Years in current job','Home Ownership','Purpose']].astype('object')
+    #dataset[['Term','Years in current job','Home Ownership','Purpose']]=dataset[['Term','Years in current job','Home Ownership','Purpose']].astype('object')
 
-    dataset = dataset[['Term','Credit Score','Annual Income','Years in current job',
-    'Home Ownership','Purpose','Monthly Debt','Years of Credit History','Number of Open Accounts','Number of Credit Problems','Current Credit Balance','Maximum Open Credit','Tax Liens']]
+    dataset = dataset[['Gender', 'Married', 'Education', 'Self_Employed', 'ApllicantIncome', 'CoapplicantIncome', 'Loan_Amount_Term', 'Credit_History', 'Propery_Area', 'Loan_Status', 'LoanAmount_log', 'TotalIncome', 'TotalIncome_log']]
     model = pickle.load(open('classifier.pkl', 'rb'))
     classifier=model.predict_proba(dataset)
     predictions = [item for sublist in classifier for item in sublist]
     colors = ['#1f77b4','#ff7f0e']
-    loan_status = ['Charged Off','Fully Paid']
+    loan_status = ['No','Yes']
     source = ColumnDataSource(
         data=dict(loan_status=loan_status, predictions=predictions))
 
