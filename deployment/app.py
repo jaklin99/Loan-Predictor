@@ -1,102 +1,127 @@
-from flask import Flask,render_template,url_for,request
-import pandas as pd
+import flask
 import pickle
-from bokeh.models import ColumnDataSource
-from bokeh.plotting import figure
-from bokeh.transform import factor_cmap
-from bokeh.embed import components
+import pandas as pd
+import numpy as np
 
-app=Flask(__name__)
 
-@app.route('/')
+from sklearn.preprocessing import StandardScaler
 
-def home():
-    return render_template('home.html')
 
-@app.route('/result',methods=['POST'])
-def predict():
-    # Getting the data from the form
-    #loan_id =request.form['Loan_ID']
-    gender=request.form['Gender']
-    married=request.form['Married']
-    education=request.form['Education']
-    self_eployed=request.form['Self_Employed']
-    applicantIncome=request.form['ApllicantIncome']
-    coapplicantIncome=request.form['CoapplicantIncome']
-    loanAmountTerm=request.form['Loan_Amount_Term']
-    credit_history=request.form['Credit_History']
-    property_area=request.form['Propery_Area']
-    loanAmount=request.form['Loan_Status']
-    loanAmount_log=request.form['LoanAmount_log']
-    totalIncome=request.form['TotalIncome']
-    totalIncome_log=request.form['TotalIncome_log']
-    #  creating a json object to hold the data from the form
-    input_data=[{
-    #'Loan_ID':loan_id,
-    'Gender':gender,
-    'Married' :married,
-    'Education':education,
-    'Self_Employed':self_eployed,
-    'ApllicantIncome':applicantIncome,
-    'CoapplicantIncome':coapplicantIncome,
-    'Loan_Amount_Term':loanAmountTerm,
-    'Credit_History':credit_history,
-    'Propery_Area':property_area,
-    'Loan_Status':loanAmount,
-    'LoanAmount_log':loanAmount_log,
-    'TotalIncome':totalIncome,
-    'TotalIncome_log':totalIncome_log}]
+#load models at top of app to load into memory only one time
+with open('models/random_forest.pickle', 'rb') as f:
+    clf_lr = pickle.load(f)
 
-    dataset=pd.DataFrame(input_data)
 
-    dataset=dataset.rename(columns={
-        #'Loan_ID': 'loan_id',
-        'Gender': 'gender',
-        'Married': 'married',
-        'Education': 'education',
-        'Self_Employed': 'self_eployed',
-        'ApllicantIncome': 'applicantIncome',
-        'CoapplicantIncome': 'coapplicantIncome',
-        'Loan_Amount_Term': 'loanAmountTerm',
-        'Credit_History': 'credit_history',
-        'Propery_Area': 'property_area',
-        'Loan_Status': 'loanAmount',
-        'LoanAmount_log': 'loanAmount_log',
-        'TotalIncome': 'totalIncome',
-        'TotalIncome_log': 'totalIncome_log'})
-    #'Loan_ID', 'Gender', 'Married', 'Education', 'Self_Employed', 'ApllicantIncome', 'CoapplicantIncome', 'Loan_Amount_Term', 'Credit_History', 'Propery_Area', 'Loan_Status', 'LoanAmount_log', 'TotalIncome', 'TotalIncome_log'
+# with open('models/knn_regression.pkl', 'rb') as f:
+#     knn = pickle.load(f)    
+ss = StandardScaler()
 
-    dataset[['Gender', 'Married', 'Education', 'Self_Employed', 'ApllicantIncome', 'CoapplicantIncome', 'Loan_Amount_Term', 'Credit_History',
-             'Propery_Area', 'Loan_Status', 'LoanAmount_log', 'TotalIncome', 'TotalIncome_log']] = dataset[['Gender', 'Married', 'Education', 'Self_Employed', 'ApllicantIncome', 'CoapplicantIncome', 'Loan_Amount_Term', 'Credit_History', 'Propery_Area', 'Loan_Status', 'LoanAmount_log', 'TotalIncome', 'TotalIncome_log']].astype(float)
 
-    #dataset[['Term','Years in current job','Home Ownership','Purpose']]=dataset[['Term','Years in current job','Home Ownership','Purpose']].astype('object')
+genders_to_int = {'MALE':1,
+                  'FEMALE':0}
 
-    dataset = dataset[['Gender', 'Married', 'Education', 'Self_Employed', 'ApllicantIncome', 'CoapplicantIncome', 'Loan_Amount_Term', 'Credit_History', 'Propery_Area', 'Loan_Status', 'LoanAmount_log', 'TotalIncome', 'TotalIncome_log']]
-    model = pickle.load(open('classifier.pkl', 'rb'))
-    classifier=model.predict_proba(dataset)
-    predictions = [item for sublist in classifier for item in sublist]
-    colors = ['#1f77b4','#ff7f0e']
-    loan_status = ['No','Yes']
-    source = ColumnDataSource(
-        data=dict(loan_status=loan_status, predictions=predictions))
+married_to_int = {'YES':1,
+                  'NO':0}
 
-    p = figure(x_range=loan_status, plot_height=500,
-               toolbar_location=None, title="Loan Status", plot_width=800)
-    p.vbar(x='loan_status', top='predictions', width=0.4, source=source, legend="loan_status",
-           line_color='black', fill_color=factor_cmap('loan_status', palette=colors, factors=loan_status))
+education_to_int = {'GRADUATED':1,
+                  'NOT GRADUATED':0}
 
-    p.xgrid.grid_line_color = None
-    p.y_range.start = 0.1
-    p.y_range.end = 0.9
-    p.legend.orientation = "horizontal"
-    p.legend.location = "top_center"
-    p.xaxis.axis_label = 'Loan Status'
-    p.yaxis.axis_label = ' Predicted Probabilities'
-    script, div = components(p)
-    return render_template('results.html',script=script,div=div)
+dependents_to_int = {'0':0,
+                      '1':1,
+                      '2':2,
+                      '3+':3}
+
+self_employment_to_int = {'YES':1,
+                          'NO':0}                      
+
+property_area_to_int = {'RURAL':0,
+                        'SEMIRURAL':1, 
+                        'URBAN':2}
 
 
 
 
-if __name__=="__main__":
+app = flask.Flask(__name__, template_folder='templates')
+
+@app.route("/", methods=['GET', 'POST'])
+def Loan_Application():
+    
+    if flask.request.method == 'GET':
+        return (flask.render_template('Loan_Application.html'))
+    
+    if flask.request.method =='POST':
+        
+        #get input
+        #gender as string
+        genders_type = flask.request.form['genders_type']
+        #marriage status as boolean YES: 1 , NO: 0
+        marital_status = flask.request.form['marital_status']
+        #Dependents: No. of people dependent on the applicant (0,1,2,3+)
+        dependents = flask.request.form['dependents']
+        
+        #dependents = dependents_to_int[dependents.upper()]
+        
+        #education status as boolean Graduated, Not graduated.
+        education_status = flask.request.form['education_status']
+        #Self_Employed: If the applicant is self-employed or not (Yes, No)
+        self_employment = flask.request.form['self_employment']
+        #Applicant Income
+        applicantIncome = float(flask.request.form['applicantIncome'])
+        #Co-Applicant Income
+        coapplicantIncome = float(flask.request.form['coapplicantIncome'])
+        #loan amount as integer
+        loan_amnt = float(flask.request.form['loan_amnt'])
+        #term as integer: from 10 to 365 days...
+        term_d = int(flask.request.form['term_d'])
+        # credit_history
+        credit_history = int(flask.request.form['credit_history'])
+        # property are
+        property_area = flask.request.form['property_area']
+        #property_area = property_area_to_int[property_area.upper()]
+
+        #create original output dict
+        output_dict= dict()
+        output_dict['Applicant Income'] = applicantIncome
+        output_dict['Co-Applicant Income'] = coapplicantIncome
+        output_dict['Loan Amount'] = loan_amnt
+        output_dict['Loan Amount Term']=term_d
+        output_dict['Credit History'] = credit_history
+        output_dict['Gender'] = genders_type
+        output_dict['Marital Status'] = marital_status
+        output_dict['Education Level'] = education_status
+        output_dict['No of Dependents'] = dependents
+        output_dict['Self Employment'] = self_employment
+        output_dict['Property Area'] = property_area
+        
+
+
+        x = np.zeros(13)
+    
+        x[0] = applicantIncome
+        x[1] = coapplicantIncome
+        x[2] = loan_amnt
+        x[3] = term_d
+        x[4] = credit_history
+
+        print('------this is array data to predict-------')
+        print('X = '+str(x))
+        print('------------------------------------------')
+
+        pred = clf_lr.predict([x])[0]
+        
+        if pred==1:
+            res = '🎊🎊Congratulations! your Loan Application has been Approved!🎊🎊'
+        else:
+             res = '😔😔Unfortunatly your Loan Application has been Denied😔😔'
+        
+
+ 
+        #render form again and add prediction
+        return flask.render_template('Loan_Application.html', 
+                                     original_input=output_dict,
+                                     result=res,)
+
+
+      
+if __name__ == '__main__':
     app.run(debug=True)
